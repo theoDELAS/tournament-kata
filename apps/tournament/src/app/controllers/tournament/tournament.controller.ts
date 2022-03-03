@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { Tournament, TournamentToAdd } from '../../api-model';
 import { v4 as uuidv4 } from 'uuid';
 import { TournamentRepositoryService } from '../../repositories/tournament-repository.service';
@@ -11,6 +18,13 @@ export class TournamentController {
   public createTournament(@Body() tournamentToAdd: TournamentToAdd): {
     id: string;
   } {
+    if (
+      tournamentToAdd.name === '' ||
+      this.tournamentRepository.getTournamentByName(tournamentToAdd.name) !=
+        undefined
+    )
+      throw new BadRequestException();
+
     const tournament = {
       id: uuidv4(),
       name: tournamentToAdd.name,
