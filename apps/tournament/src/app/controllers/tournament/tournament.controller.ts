@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Post,
 } from '@nestjs/common';
@@ -18,12 +19,18 @@ export class TournamentController {
   public createTournament(@Body() tournamentToAdd: TournamentToAdd): {
     id: string;
   } {
+    switch (tournamentToAdd.name) {
+      case undefined:
+      case '':
+        throw new BadRequestException();
+    }
+
     if (
-      tournamentToAdd.name === '' ||
       this.tournamentRepository.getTournamentByName(tournamentToAdd.name) !=
-        undefined
-    )
+      undefined
+    ) {
       throw new BadRequestException();
+    }
 
     const tournament = {
       id: uuidv4(),
@@ -38,6 +45,10 @@ export class TournamentController {
 
   @Get(':id')
   public getTournament(@Param('id') id: string): Tournament {
-    return this.tournamentRepository.getTournament(id);
+    const tournament = this.tournamentRepository.getTournament(id);
+    if (tournament == undefined || tournament.name == undefined) {
+      throw new NotFoundException();
+    }
+    return tournament;
   }
 }
