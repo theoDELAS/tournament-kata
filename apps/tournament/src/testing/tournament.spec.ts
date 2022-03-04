@@ -1,4 +1,4 @@
-import { TournamentToAdd } from '../app/api-model';
+import { Participant, TournamentToAdd } from '../app/api-model';
 import { INestApplication } from '@nestjs/common';
 import { generateRandomName, startApp } from './test.utils';
 import * as request from 'supertest';
@@ -88,5 +88,41 @@ describe('/tournament endpoint', () => {
 
       expect(get.name).toBeDefined();
     });
+
+    it('should return error when tournament not found', async () => {
+      const participant = {
+        name: '',
+        elo: 0,
+      } as Participant;
+
+      const { addParticipantBody } = await request(app.getHttpServer())
+        .post(`/api/tournaments/${uuidv4()}/participants`)
+        .send(participant)
+        .expect(404);
+    });
+
+    // it('should return error when participant name or elo are incorrect', async () => {
+    //   const exampleTournament = {
+    //     name: generateRandomName(),
+    //   } as TournamentToAdd;
+
+    //   const participant = {
+    //     name: '',
+    //     elo: '',
+    //   };
+
+    //   const { tournamentBody } = await request(app.getHttpServer())
+    //     .post('/api/tournaments')
+    //     .send(exampleTournament)
+    //     .expect(201);
+
+    //   const { addParticipantBody } = await request(app.getHttpServer())
+    //     .post(`/api/tournaments/${tournamentBody.id}/participants`)
+    //     .send(participant)
+    //     .expect(400);
+
+    //   expect(participant.elo).toBe(Number);
+    //   expect(participant.name).toBe(String);
+    // });
   });
 });

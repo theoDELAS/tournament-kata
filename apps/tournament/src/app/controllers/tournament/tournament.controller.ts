@@ -7,7 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { Tournament, TournamentToAdd } from '../../api-model';
+import { Tournament, TournamentToAdd, Participant } from '../../api-model';
 import { v4 as uuidv4 } from 'uuid';
 import { TournamentRepositoryService } from '../../repositories/tournament-repository.service';
 
@@ -41,6 +41,14 @@ export class TournamentController {
     this.tournamentRepository.saveTournament(tournament);
 
     return { id: tournament.id };
+  }
+
+  @Post(':id/participants')
+  public addParticipantToTournament(
+    @Param('id') id: string,
+    @Body() participant: Participant
+  ) {
+    const tournament: Tournament = this.getTournament(id);
   }
 
   @Get(':id')
