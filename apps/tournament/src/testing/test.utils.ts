@@ -17,3 +17,7 @@ export interface ApiResponse<T> {
   status: number;
   body: T;
 }
+
+export const generateRandomName = () => {
+  return String(Math.random() * (1000 - 1) + 1);
+};
